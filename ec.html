@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Amicable Numbers</title>
+	<script language="javascript">
+		function run(){
+			
+			lefttext = document.getElementById("left").value;
+			righttext = document.getElementById("right").value;
+			
+			if (document.getElementById("arrow").value == "right"){
+				document.getElementById("arrow").value = "left"
+				document.getElementById("arrow").innerHTML = "<-";
+				document.getElementById("right").value = lefttext;
+				document.getElementById("left").value = "";
+			} else if (document.getElementById("arrow").value == "left"){
+				document.getElementById("arrow").value = "right"
+				document.getElementById("arrow").innerHTML = "->";
+				document.getElementById("left").value = righttext;
+				document.getElementById("right").value = "";
+			}
+		}
+	</script>
+</head>
+<body>
+	<textarea id="left"></textarea>
+	<button type = "button" onclick="run()" id="arrow" value="right">-></button>
+	<textarea id="right"></textarea>
+	<div id="test"></div>
+</body>
+</html>
