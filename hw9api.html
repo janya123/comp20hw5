@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+	<title>Meal API</title>
+	<meta charset="utf-8"/>
+	<script>
+		function getMeal() {
+			request = new XMLHttpRequest();
+			console.log("1 - request object created");
+
+		request.open("GET", "https://www.themealdb.com/api/json/v1/1/random.php", true)
+
+			console.log("2 - opened request file");
+
+			request.onreadystatechange = function() {
+				console.log("3 - readystatechange event fired.");
+ 
+				if (request.readyState == 4 && request.status == 200) {
+
+					console.log("5 - response received");
+					result = request.responseText;
+					meal = JSON.parse(result);
+					mealName = JSON.stringify(meal["meals"][0]["strMeal"]);
+					ins = JSON.stringify(meal["meals"][0]["strInstructions"]);
+					ins = ins.substring(1,ins.length-1);
+					instruct = ins.split(".");
+					instructions="";
+					for (i = 0; i < instruct.length-1; i++){
+						instructions += i+1 +". " + instruct[i] + "<br/>";
+					}
+					document.getElementById("data").innerHTML =JSON.stringify(meal);
+					document.getElementById("pretty").innerHTML ="suggested meal: " + mealName.substring(1,mealName.length -1) + "<br/>Instructions:<br/>" + instructions;					
+				}
+				else if (request.readyState == 4 && request.status != 200) {
+					document.getElementById("data").innerHTML = "Something might be wrong - check the logs";
+				}
+
+				else if (request.readyState == 3) {
+					document.getElementById("data").innerHTML = "Not ready yet, try again!";
+				}
+			}
+			request.send();
+			console.log("4 - Request sent");
+		}
+	</script>
+</head>
+
+
+<body onload="getMeal()">
+
+	<h1>Meal</h1>
+	<div id="data">Loading...</div>
+	<br/>
+	<h2>Meal Instructions - Prety Printed</h2>
+	<div id = "pretty"></div>
+</body>
+</html>
