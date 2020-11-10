@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+	<title>SetList</title>
+	<meta charset="utf-8"/>
+	<script>
+		function showSongs(boo) {
+			request = new XMLHttpRequest();
+			console.log("1: created request");
+
+			request.open("GET", "https://clam08.github.io/comp20hw5/song.json", true);
+
+			console.log("2: open success");
+			request.onreadystatechange = function() {
+				console.log("3:  event fired");
+			
+				if (request.readyState == 4 && request.status == 200) {
+					console.log("5:  data is ready");
+					theData = request.responseText;
+					returnHTML = theData;
+					data = JSON.parse(theData);
+
+					document.getElementById("messages").innerHTML =returnHTML;
+					if (boo){
+						filter=document.getElementById("genre").value;
+						prettySongs(data,filter);
+					} else {
+						prettySongs(data,"none");
+					}
+				}
+				else if (request.readyState == 4 && request.status != 200) {
+					document.getElementById("messages").innerHTML = "Oh no! Something went wrong.";
+				}
+				else if (request.readyState == 3) {
+					console.log("6:  ready state 3- request received,data being sent");
+					document.getElementById("messages").innerHTML = "Come back soon!";
+				}
+			}
+			request.send();
+			console.log("4 request sent");
+		}
+		function prettySongs(data,filter){
+			str = "";
+			for(i = 0; i < data.length; i++){
+				boo = false;
+				temp = "";
+				temp += data[i].title + "<br/>Artist: " + data[i].artist + "<br/>Genre: ";
+				for (j = 0; j<data[i].genre.length; j++){
+					temp += data[i].genre[j];
+					if (j!=data[i].genre.length-1){
+						temp+=", ";
+					}
+					if(data[i].genre[j]==filter || filter == "none"){
+						boo = true;
+					}
+				}
+				temp += "<br/>Released " + data[i].year + "<br/><br/>";
+				if (boo){
+					str += temp;
+				}
+			}
+			document.getElementById("pretty").innerHTML = str;
+		}
+	</script>
+</head>
+
+
+<body onload="showSongs(false)">
+
+	<h1>Set List</h1>
+	<div id="messages">Loading...</div>
+	<br/>
+	<h2>Set List Printed Nicely</h2>
+	<div id="pretty"></div>
+	<br/>
+	<h2>Filter the songs</h2>
+	<form>
+		<select id="genre" name="genre">
+			<option value="Pop">Pop</option>
+			<option value="Indie">Indie</option>
+			<option value="Alternative">Alternative</option>
+			<option value="Hip-Hop">Hip-Hop</option>
+			<option value="Rap">Rap</option>
+			<option value="Funk">Funk</option>
+			<option value="Dance">Dance</option>
+			<option value="Electronic">Electronic</option>
+		</select>
+		<button type="button" onclick="showSongs(true)">Filter</button>
+	</form>
+
+</body>
+</html>
