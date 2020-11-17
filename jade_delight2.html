@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+<style>
+	body{
+		width:70%;
+		margin:auto;
+		text-align:center;
+	}
+	h1{
+		text-align: center;
+	}
+	table{
+		width: 100%;
+	}
+</style>
+
+<script language="javascript">
+	function receipt(){
+		d = new Date();
+		d2 = new Date();
+		pu_d = "";
+		if (document.forms[0].p_or_d[0].checked == true){//pickup
+			d2.setMinutes(d.getMinutes()+15); 
+			pu_d = " (pickup) ";
+		} else if (document.forms[0].p_or_d[1].checked == true){//delivery
+			d2.setMinutes(d.getMinutes()+30);
+			pu_d = " (delivery) ";
+		}  
+		
+		order = "";
+		for (i=0; i< menuItems.length; i++){
+			var x = document.getElementsByName("quan"+i)[0].selectedIndex;
+			var name = menuItems[i].name;
+			var cost = document.getElementsByName("cost")[i].value;
+			if (cost == ""){
+				cost = 0;
+			}
+			order += x + " " + name + ": $" + cost + "<br>";
+		}
+		
+		total = document.getElementById("total").value;
+		if (total == ""){
+			total = 0;
+		}
+		myWindow = window.open("_blank");
+		myWindow.document.write("Thank you for from Jade Delight! <br> <br>" +
+		"Your order: " + "<br>" + order + "<br> <br>" +
+		pu_d + "Your order will be by: " + d2 + "<br>" +
+		"Your order total is: $"+ total + "<br>");
+		myWindow.focus();
+	}
+	
+	function valid_phonenumber(input){
+		if (input.length == 10 && /^\d+$/.test(input)==true){
+			return true;
+		} else if (input.length == 12){
+			res = input.split("-");
+			for(i=0; i<res.length; i++){
+				if ( /^\d+$/.test(res[i]) == false){
+					return false;
+				}
+			}
+			return true;
+		}
+		return false
+	}
+	
+	function validate(){
+		lname_input = document.forms[0].lname.value;
+		telephone_input = document.forms[0].phone.value;
+		
+		if (lname_input == ""){
+			alert("Please enter last name.");
+			document.forms[0].lname.focus(); // move cursor
+			return false; // prevent form action
+		}
+		if (valid_phonenumber(telephone_input)==false){
+			alert("Must enter a valid phone number"); 
+			document.forms[0].phone.focus(); 
+			return false; // prevent form action
+		}
+		
+		if (document.forms[0].p_or_d[1].checked == true){ 
+			street_input = document.forms[0].street.value;
+			city_input = document.forms[0].city.value;
+			
+			if (street_input == ""){
+				alert("Must enter a street address."); 
+				document.forms[0].street.focus(); 
+				return false; 
+			}
+			if (city_input == ""){
+				alert("Must enter a city name"); 
+				document.forms[0].city.focus(); 
+				return false; 
+			}
+		}
+		
+		receipt();
+		return true;
+	}
+</script>
+</head>
+
+<body>
+	<script language="javascript">
+
+		function MenuItem(name, cost){
+			this.name = name;
+			this.cost=cost;
+		}
+
+		menuItems = new Array(
+			new MenuItem("Chicken Chop Suey", 4.5),
+			new MenuItem("Sweet and Sour Pork", 6.25),
+			new MenuItem("Shrimp Lo Mein", 5.25),
+			new MenuItem("Moo Shi Chicken", 6.5),
+			new MenuItem("Fried Rice", 2.35)
+		);
+
+		function makeSelect(name, minRange, maxRange){
+			t= "";
+			t = "<select name='" + name + "' size='1'>";
+			for (j=minRange; j<=maxRange; j++)
+			   t += "<option>" + j + "</option>";
+			t+= "</select>"; 
+			return t;
+		}
+		
+		function compute(){
+			subtotal = 0;
+			for (i=0; i< menuItems.length; i++){
+				each_total = Number(document.getElementsByName("cost")[i].value);
+				subtotal += each_total;
+			}
+			
+			tax_temp = Number(subtotal)*0.0625;
+			total_temp = Number(subtotal) + tax_temp;
+			 
+			document.getElementById("subtotal").value = Number(subtotal).toFixed(2);
+			document.getElementById("tax").value = Number(tax_temp).toFixed(2);
+			document.getElementById("total").value = Number(total_temp).toFixed(2);
+		}
+	</script>
+
+	<h1>Jade Delight</h1>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$(".address").hide();
+			$('input[name ="p_or_d"]').click(function(){
+				const val = $('input[name=p_or_d]:checked').val();
+				if (val == "delivery"){
+					$(".address").show();
+				}
+				if (val == "pickup"){
+					$(".address").hide();
+				}
+			});
+		});
+	</script>
+	
+	<form onsubmit="return validate()">
+		<p>First Name: <input type="text"  name='fname' /></p>
+		<p>Last Name*:  <input type="text"  name='lname' /></p>
+		<p class="address">Street: <input type="text"  name='street' /></p>
+		<p class="address">City: <input type="text"  name='city' /></p>
+		<p>Phone*: <input type="text"  name='phone' /></p>
+		<p> 
+			<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+			<input type="radio"  name='p_or_d' value = 'delivery'/>Delivery
+		</p>
+		
+		<br><br>
+		
+		<table cellpadding="5">
+		  <tr>
+		    <th>Select Item</th>
+		    <th>Item Name</th>
+		    <th>Cost Each</th>
+		    <th>Total Cost</th>
+		  </tr>
+						
+			<script language="javascript">
+			  s = "";
+			  for (i=0; i< menuItems.length; i++){
+				  s += "<tr><td>";
+				  s += makeSelect("quan" + i, 0, 10);
+				  s += "</td><td>" + menuItems[i].name + "</td>";
+				  s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+				  s += "<td>$<input type='text' name='cost'/></td></tr>";
+			  }
+			  document.writeln(s);
+			</script>
+		</table>
+		
+		<p>Subtotal: 
+		   $<input type="text"  name='subtotal' id="subtotal" />
+		</p>
+		<p>Mass tax 6.25%:
+		  $ <input type="text"  name='tax' id="tax" />
+		</p>
+		<p>Total: 
+			$ <input type="text"  name='total' id="total" />
+		</p>
+		<input type = "submit" value = "Submit Order" />
+	</form>
+	<script language="javascript">
+		subtotal_temp=0, tax_temp=0, total_temp=0;
+
+		for (i=0; i< menuItems.length; i++){
+			document.getElementsByName("quan"+i)[0].onchange = function() {
+				name=this.name;
+				i = name.substring(4);
+				x = document.getElementsByName("quan"+i)[0].selectedIndex; 
+				price_each = menuItems[i].cost.toFixed(2);
+				document.getElementsByName("cost")[i].value = (x*price_each).toFixed(2);
+				
+				compute();
+			}
+		}
+		
+	</script>
+	
+</body>
+</html>
